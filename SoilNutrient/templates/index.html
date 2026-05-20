@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Soil System</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #4CAF50, #8BC34A);
+    margin: 0;
+}
+
+.main {
+    display: flex;
+    width: 90%;
+    margin: 40px auto;
+    gap: 20px;
+}
+
+@media (max-width: 900px) {
+    .main {
+        flex-direction: column;
+    }
+    .form-box, .result-box {
+        width: 100%;
+    }
+}
+
+.form-box, .result-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 20px rgba(0,0,0,0.2);
+}
+
+.form-box { width: 40%; }
+.result-box { width: 60%; }
+
+h2 {
+    text-align: center;
+    color: #2e7d32;
+}
+
+label { font-weight: bold; }
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 100%;
+    background: #4CAF50;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover { background: #388e3c; }
+
+.result-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.graph-box, .matrix-box {
+    width: 50%;
+}
+
+.result-row img {
+    width: 100%;
+}
+
+.good { color: green; }
+.medium { color: orange; }
+.poor { color: red; }
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.status-box {
+    background: #f1f8e9;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="main">
+
+<!-- LEFT FORM -->
+<div class="form-box">
+<h2>🌾 Smart Soil Input</h2>
+
+<form method="POST">
+
+<label>Nitrogen</label>
+<input name="N" required>
+
+<label>Phosphorus</label>
+<input name="P" required>
+
+<label>Potassium</label>
+<input name="K" required>
+
+<label>Soil Type</label>
+<select name="soil">
+<option>black</option>
+<option>red</option>
+<option>sandy</option>
+<option>clay</option>
+</select>
+
+<label>Season</label>
+<select name="season">
+<option>kharif</option>
+<option>rabi</option>
+<option>summer</option>
+</select>
+
+<label>Crop Name</label>
+<input name="crop" required>
+
+<button>Predict</button>
+
+</form>
+</div>
+
+<!-- RIGHT RESULT -->
+<div class="result-box">
+<h2>📊 Prediction Results</h2>
+
+{% if error %}
+<p class="error">{{error}}</p>
+{% endif %}
+
+{% if status_N %}
+
+<h3>🌱 Crop: {{crop_name}}</h3>
+
+<!-- MULTI NUTRIENT STATUS -->
+<div class="status-box">
+<h3>🧪 Nutrient Status</h3>
+<p>🌿 Nitrogen: <b>{{status_N}}</b></p>
+<p>🌿 Phosphorus: <b>{{status_P}}</b></p>
+<p>🌿 Potassium: <b>{{status_K}}</b></p>
+</div>
+
+<!-- ML OUTPUT -->
+<h3>🤖 Predicted Important Nutrient: {{predicted_nutrient}}</h3>
+<h3>📈 Model Confidence: {{nutrient_confidence}} %</h3>
+
+<!-- ✅ FIXED FERTILIZER LOOP -->
+<h3>🌿 Recommended Fertilizers:</h3>
+<ul>
+{% for f, amt in fertilizer_data %}
+<li>{{f}} - {{amt}}</li>
+{% endfor %}
+</ul>
+
+<h3>📊 Soil Health Score: {{health}}</h3>
+<h3 class="{{health_status|lower}}">🌿 Soil Quality: {{health_status}}</h3>
+
+<h3>Overall Model Accuracy: {{acc2}} %</h3>
+
+<div class="result-row">
+
+    <div class="graph-box">
+        <h3>📊 Soil Nutrient Graph</h3>
+        {% if graph %}
+        <img src="{{graph}}">
+        {% endif %}
+    </div>
+
+    <div class="matrix-box">
+        <h3>📊 Confusion Matrix</h3>
+        <img src="static/confusion_matrix.png">
+    </div>
+
+</div>
+
+{% else %}
+<p>Enter soil values to see recommendations.</p>
+{% endif %}
+
+</div>
+</div>
+
+</body>
+</html>
